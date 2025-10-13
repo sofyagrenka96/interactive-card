@@ -1,10 +1,7 @@
-# interactive-card
-Animated interactive birthday card built with HTML, CSS and JavaScript
-
 ### 🌍 English Version | Английская версия
 # Interactive Greeting Card 
 
-A feature-rich, animated interactive greeting card built with pure frontend technologies. Perfect for special occasions, presentations, or as a creative web project.
+A feature-rich, animated interactive greeting card built with pure frontend technologies(HTML, CSS and JavaScript). Perfect for special occasions, presentations, or as a creative web project.
 
 ## Features
 
