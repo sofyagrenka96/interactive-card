@@ -1195,7 +1195,7 @@ body {
 /* === МОБИЛЬНАЯ ВЕРСИЯ - ПРОСТОЕ МАСШТАБИРОВАНИЕ === */
 @media (max-width: 768px) {
     body {
-        transform: scale(0.7);
+        transform: scale(0.9);
         transform-origin: center center;
         width: 100vw;
         height: 100vh; 
@@ -1210,14 +1210,14 @@ body {
 /* === ДЛЯ ОЧЕНЬ МАЛЕНЬКИХ ЭКРАНОВ === */
 @media (max-width: 480px) {
     body {
-        transform: scale(0.5);
+        transform: scale(0.7);
     }
 }
 
 /* === ДЛЯ САМЫХ МАЛЕНЬКИХ ЭКРАНОВ === */
 @media (max-width: 360px) {
     body {
-        transform: scale(0.3);
+        transform: scale(0.4);
     }
 }
 
