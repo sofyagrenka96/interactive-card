@@ -1192,172 +1192,39 @@ body {
     pointer-events: none;
 }
 
-/* === МОБИЛЬНАЯ ВЕРСИЯ - СОХРАНЕНИЕ ПРОПОРЦИЙ === */
+/* === МОБИЛЬНАЯ ВЕРСИЯ - ПРОСТОЕ МАСШТАБИРОВАНИЕ === */
 @media (max-width: 768px) {
     body {
-        padding: 10px;
-        align-items: flex-start;
-        overflow: auto;
-    }
-    
-    .base {
-        width: 100%;
-        max-width: 500px; /* Ограничиваем максимальную ширину */
-        height: auto;
-        aspect-ratio: 1200 / 800; /* Сохраняем пропорции 3:2 */
-        transform: scale(0.8); /* Уменьшаем всю открытку */
+        transform: scale(0.7);
         transform-origin: center center;
-        margin: 20px auto;
-    }
-    
-    .book {
-        width: 500px;
-        height: 650px;
-        transform: translate(-50%, -50%) scale(0.8); /* Масштабируем книгу */
-        transform-origin: center center;
-    }
-    
-    .overlay {
-        width: 1200px;
-        height: 800px;
-        transform: translate(-50%, -50%) scale(0.8);
-        transform-origin: center center;
-    }
-    
-    .open-book {
-        transform: translate(-50%, -50%) scale(0.8);
-        transform-origin: center center;
-    }
-    
-    .navigation-arrows {
-        width: 1200px;
-        height: 800px;
-        transform: translate(-50%, -50%) scale(0.8);
-        transform-origin: center center;
-    }
-    
-    .arrow {
-        transform: scale(0.9); /* Стрелки чуть меньше */
-    }
-    
-    .arrow-left {
-        left: -25px;
-    }
-    
-    .arrow-right {
-        right: -25px;
-    }
-    
-    #thirdSlide,
-    #fourthSlide,
-    #fifthSlide {
-        transform: translate(-50%, -50%) scale(0.8);
-        transform-origin: center center;
-    }
-    
-    .video-container {
-        transform: translate(-50%, -50%) scale(0.7);
-        transform-origin: center center;
-    }
-    
-    .video-frame {
-        transform: translate(-50%, -50%) scale(0.7);
-        transform-origin: center center;
+        width: 100vw;
+        height: 100vh; 
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0;
+        padding: 0;
     }
 }
 
 /* === ДЛЯ ОЧЕНЬ МАЛЕНЬКИХ ЭКРАНОВ === */
 @media (max-width: 480px) {
-    .base {
-        transform: scale(0.6); /* Еще больше уменьшаем */
-        margin: 10px auto;
-    }
-    
-    .book {
-        transform: translate(-50%, -50%) scale(0.6);
-    }
-    
-    .overlay {
-        transform: translate(-50%, -50%) scale(0.6);
-    }
-    
-    .open-book {
-        transform: translate(-50%, -50%) scale(0.6);
-    }
-    
-    .navigation-arrows {
-        transform: translate(-50%, -50%) scale(0.6);
-    }
-    
-    .arrow {
-        transform: scale(0.8);
-    }
-    
-    .arrow-left {
-        left: -35px;
-    }
-    
-    .arrow-right {
-        right: -35px;
-    }
-    
-    #thirdSlide,
-    #fourthSlide,
-    #fifthSlide {
-        transform: translate(-50%, -50%) scale(0.6);
-    }
-    
-    .video-container {
-        transform: translate(-50%, -50%) scale(0.5);
-    }
-    
-    .video-frame {
-        transform: translate(-50%, -50%) scale(0.5);
+    body {
+        transform: scale(0.5);
     }
 }
 
 /* === ДЛЯ САМЫХ МАЛЕНЬКИХ ЭКРАНОВ === */
 @media (max-width: 360px) {
-    .base {
-        transform: scale(0.5);
-    }
-    
-    .book {
-        transform: translate(-50%, -50%) scale(0.5);
-    }
-    
-    .overlay {
-        transform: translate(-50%, -50%) scale(0.5);
-    }
-    
-    .open-book {
-        transform: translate(-50%, -50%) scale(0.5);
-    }
-    
-    .navigation-arrows {
-        transform: translate(-50%, -50%) scale(0.5);
-    }
-    
-    #thirdSlide,
-    #fourthSlide,
-    #fifthSlide {
-        transform: translate(-50%, -50%) scale(0.5);
-    }
-    
-    .video-container {
-        transform: translate(-50%, -50%) scale(0.4);
-    }
-    
-    .video-frame {
-        transform: translate(-50%, -50%) scale(0.4);
+    body {
+        transform: scale(0.3);
     }
 }
 
-/* === ОБЕСПЕЧИВАЕМ ПРОКРУТКУ ЕСЛИ ОТКРЫТКА НЕ ПОМЕЩАЕТСЯ === */
+/* === ОБЕСПЕЧИВАЕМ ПРОКРУТКУ ЕСЛИ НУЖНО === */
 @media (max-width: 768px) {
-    body {
+    html, body {
+        overflow: auto;
         min-height: 100vh;
-        height: auto;
-        overflow-y: auto;
     }
 }
