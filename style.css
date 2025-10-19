@@ -1225,11 +1225,7 @@ body {
     }
     
     .switch-button {
-        transform: scale(1.3);
-    }
-    
-    .shop-coin-frame {
-        transform: scale(1.4);
+        transform: scale(1.1);
     }
     
     .button-image {
