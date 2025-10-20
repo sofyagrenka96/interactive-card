@@ -746,6 +746,25 @@ body {
     pointer-events: auto;
 }
 
+#clickerScreen, 
+.clicker-background, 
+.killua-character,
+#clickerScreen * {
+    touch-action: pan-x pan-y;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.shop-coin-frame,
+.switch-button {
+    touch-action: pan-x pan-y;
+    -webkit-tap-highlight-color: transparent;
+}
+
 .switch-button {
     position: absolute;
     width: 44px;
@@ -983,6 +1002,7 @@ body {
     animation: floatUp 1s ease-out forwards;
     -webkit-font-smoothing: antialiased;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    font-size: clamp(8px, 2vw, 14px);
 }
 
 @keyframes floatUp {
@@ -1071,6 +1091,8 @@ body {
     width: 756px;
     height: 425px;
     z-index: 200;
+
+    background: #FFFFFF;
 }
 
 .video-player {
@@ -1078,6 +1100,8 @@ body {
     height: 100%;
     object-fit: cover;
     display: block;
+
+    background: #FFFFFF;
 }
 
 .play-button {

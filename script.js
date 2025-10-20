@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     console.log('Страница загружена');
 
+    // Элементы DOM
     const walkButton = document.getElementById('walkButton');
     const okText = document.getElementById('okText');
     const catStand = document.getElementById('catStand');
@@ -20,15 +21,30 @@ document.addEventListener('DOMContentLoaded', function () {
     const playButton = document.querySelector('.play-button');
     const fifthSlide = document.getElementById('fifthSlide');
 
-    initNavigation();
-
+    // Переменные состояния
     let currentSlide = 0;
     let musicStarted = false;
     let stepsInterval = null;
     let tailWagInterval = null;
     let photoInterval = null;
     let currentPhotoIndex = 0;
+    let killua = null;
+    let killuaBlink = null;
+    let blinkTimeout = null;
+    let lightnings = [];
+    let lightningInterval = null;
+    let currentLightningIndex = 0;
+    let clickerMain = null;
+    let clickerCounter = null;
+    let clickCount = 0;
+    let clickButton = null;
+    let shopButton = null;
+    let clickerShop = null;
+    let currentMode = 'clicker';
+
     const photos = [];
+    const itemPrices = [20, 40, 60, 80, 100];
+    let purchasedItems = [];
 
     // Загрузка фотографий
     for (let i = 1; i <= 5; i++) {
@@ -38,26 +54,11 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    let killua = null;
-    let killuaBlink = null;
-    let blinkTimeout = null;
+    // Инициализация
+    initNavigation();
+    initAudio();
 
-    let lightnings = [];
-    let lightningInterval = null;
-    let currentLightningIndex = 0;
-
-    let clickerMain = null;
-    let clickerCounter = null;
-    let clickCount = 0;
-
-    let clickButton = null;
-    let shopButton = null;
-    let clickerShop = null;
-    let currentMode = 'clicker';
-
-    const itemPrices = [20, 40, 60, 80, 100];
-    let purchasedItems = [];
-
+    // ========== ФУНКЦИИ ВИДЕО ==========
     function initVideo() {
         if (!birthdayVideo || !playButton) return;
 
@@ -94,9 +95,10 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
-
+    // ========== ФУНКЦИИ КЛИКЕРА ==========
     function initClickerGame() {
         console.log('Инициализация кликера...');
+        
         clickerMain = document.getElementById('clickerMain');
         clickerCounter = document.getElementById('clickerCounter');
         clickerShop = document.getElementById('clickerShop');
@@ -134,7 +136,6 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
 
-
         startLightningAnimation();
     }
 
@@ -155,14 +156,12 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function handleClickerClick(event) {
-
         const clickerScreen = document.getElementById('clickerScreen');
         if (!clickerScreen.classList.contains('active') || currentSlide !== 2) {
             return;
         }
 
         createClickEffect(event.clientX, event.clientY);
-
         clickCount++;
         updateClickCounter();
 
@@ -178,7 +177,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (clickerCounter) {
             clickerCounter.textContent = clickCount.toString().padStart(3, '0');
-
             checkUnlockedItems();
         }
     }
@@ -191,7 +189,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (mode === 'clicker') {
             clickerScreen.classList.add('active');
             shopScreen.classList.remove('active');
-
             clickerScreen.style.display = 'block';
             shopScreen.style.display = 'none';
 
@@ -201,7 +198,6 @@ document.addEventListener('DOMContentLoaded', function () {
         } else if (mode === 'shop') {
             shopScreen.classList.add('active');
             clickerScreen.classList.remove('active');
-
             clickerScreen.style.display = 'none';
             shopScreen.style.display = 'block';
 
@@ -212,7 +208,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function initShopItems() {
         console.log('Инициализация магазина...');
-
         checkUnlockedItems();
 
         const coinFrames = document.querySelectorAll('.shop-coin-frame');
@@ -229,7 +224,6 @@ document.addEventListener('DOMContentLoaded', function () {
             if (clickCount >= itemPrices[i]) {
                 unlockItem(itemNumber);
 
-                // Проверяем, куплен ли предмет
                 if (purchasedItems.includes(itemNumber)) {
                     const object = document.querySelector(`.object-${itemNumber}`);
                     if (object) object.style.opacity = '0.4';
@@ -258,22 +252,19 @@ document.addEventListener('DOMContentLoaded', function () {
         const price = itemPrices[itemNumber - 1];
         const frame = document.querySelector(`.frame-${itemNumber}`);
 
-    // Сбрасываем возможную предыдущую анимацию
-    if (frame) {
-        frame.style.animation = 'none';
-        void frame.offsetWidth; // Принудительный reflow
-    }
+        // Сбрасываем возможную предыдущую анимацию
+        if (frame) {
+            frame.style.animation = 'none';
+            void frame.offsetWidth;
+        }
 
         // Проверяем, достаточно ли денег и не куплен ли уже предмет
         if (clickCount >= price && !purchasedItems.includes(itemNumber)) {
             clickCount -= price;
             updateClickCounter();
-
-            // Добавляем в список купленных
             purchasedItems.push(itemNumber);
-
-            // Показываем предмет на правой странице
             showPurchasedItem(itemNumber);
+            
             const object = document.querySelector(`.object-${itemNumber}`);
             object.style.opacity = '0.4';
 
@@ -281,24 +272,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (purchasedItems.length === 5) {
                 console.log('Куплен последний предмет! Запускаем анимацию...');
-
                 setMode('clicker');
-
                 setTimeout(() => {
                     spawnHearts();
                 }, 500);
             }
         } else if (purchasedItems.includes(itemNumber)) {
             console.log('Предмет уже куплен!');
-            const frame = document.querySelector(`.frame-${itemNumber}`);
-            frame.style.animation = 'shake 0.3s ease';
-            setTimeout(() => {
-                frame.style.animation = '';
-            }, 300);
+            animateFrame(frame);
         } else {
             console.log('Недостаточно монет!');
-            // Можно добавить анимацию "тряски"
-            const frame = document.querySelector(`.frame-${itemNumber}`);
+            animateFrame(frame);
+        }
+    }
+
+    function animateFrame(frame) {
+        if (frame) {
             frame.style.animation = 'shake 0.3s ease';
             setTimeout(() => {
                 frame.style.animation = '';
@@ -354,7 +343,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (currentLightningIndex >= lightnings.length) {
                 clearInterval(sequenceInterval);
-
                 lightningInterval = setTimeout(() => {
                     animateLightningSequence();
                 }, 450);
@@ -398,7 +386,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 heart.style.width = config.size + 'px';
                 heart.style.height = config.size + 'px';
-
                 heart.style.left = config.x + 'px';
                 heart.style.top = config.y + 'px';
 
@@ -412,7 +399,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 setTimeout(() => {
                     heart.classList.add('heart-animation');
-
                     setTimeout(() => {
                         if (heart.parentNode === container) {
                             container.removeChild(heart);
@@ -422,6 +408,8 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }, 100);
     }
+
+    // ========== ФУНКЦИИ НАВИГАЦИИ ==========
     function initNavigation() {
         arrowLeft.addEventListener('click', function (event) {
             event.stopPropagation();
@@ -466,58 +454,17 @@ document.addEventListener('DOMContentLoaded', function () {
         overlay.classList.add('active');
 
         setTimeout(() => {
-            // Сбрасываем состояние текущего слайда
             resetSlideState(currentSlide);
 
             // Скрываем все слайды
-            closedBook.style.opacity = '0';
-            closedBook.style.pointerEvents = 'none';
-            openBook.style.opacity = '0';
-            openBook.style.pointerEvents = 'none';
-            thirdSlide.style.opacity = '0';
-            thirdSlide.style.pointerEvents = 'none';
-            fourthSlide.style.opacity = '0';
-            fourthSlide.style.pointerEvents = 'none';
-            fifthSlide.style.opacity = '0';
-            fifthSlide.style.pointerEvents = 'none';
+            hideAllSlides();
 
             // Останавливаем все анимации текущего слайда
-            if (currentSlide === 1) {
-                stopPhotoSlideShow();
-                stopTailWagging();
-            } else if (currentSlide === 2) {
-                stopLightningAnimation();
-            }
+            stopSlideAnimations(currentSlide);
 
             // Показываем целевой слайд
             setTimeout(() => {
-                if (targetSlide === 0) {
-                    closedBook.style.opacity = '1';
-                    closedBook.style.pointerEvents = 'auto';
-                    navigationArrows.classList.remove('visible');
-                } else if (targetSlide === 1) {
-                    openBook.style.opacity = '1';
-                    openBook.style.pointerEvents = 'auto';
-                    navigationArrows.classList.add('visible');
-                    startPhotoSlideShow();
-                    startTailWagging();
-                    setTimeout(() => initMessages(), 100);
-                } else if (targetSlide === 2) {
-                    thirdSlide.style.opacity = '1';
-                    thirdSlide.style.pointerEvents = 'auto';
-                    navigationArrows.classList.add('visible');
-                    initClickerGame();
-                } else if (targetSlide === 3) {
-                    fourthSlide.style.opacity = '1';
-                    fourthSlide.style.pointerEvents = 'auto';
-                    navigationArrows.classList.add('visible');
-                    initVideo();
-                } else if (targetSlide === 4) {
-                    fifthSlide.style.opacity = '1';
-                    fifthSlide.style.pointerEvents = 'auto';
-                    navigationArrows.classList.add('visible');
-                }
-
+                showTargetSlide(targetSlide);
                 currentSlide = targetSlide;
                 updateArrowVisibility();
 
@@ -533,26 +480,78 @@ document.addEventListener('DOMContentLoaded', function () {
                     }, 800);
                 }, 800);
             }, 50);
-        }, 800); // Ждем затемнения перед сменой слайдов
+        }, 800);
     }
 
-    function forceShowSecondSlide() {
-        // Скрываем все слайды
+    function hideAllSlides() {
         closedBook.style.opacity = '0';
         closedBook.style.pointerEvents = 'none';
         openBook.style.opacity = '0';
         openBook.style.pointerEvents = 'none';
         thirdSlide.style.opacity = '0';
         thirdSlide.style.pointerEvents = 'none';
+        fourthSlide.style.opacity = '0';
+        fourthSlide.style.pointerEvents = 'none';
+        fifthSlide.style.opacity = '0';
+        fifthSlide.style.pointerEvents = 'none';
+    }
 
-        // Показываем второй слайд
+    function stopSlideAnimations(slideNumber) {
+        if (slideNumber === 1) {
+            stopPhotoSlideShow();
+            stopTailWagging();
+        } else if (slideNumber === 2) {
+            stopLightningAnimation();
+        }
+    }
+
+    function showTargetSlide(targetSlide) {
+        const slides = {
+            0: () => {
+                closedBook.style.opacity = '1';
+                closedBook.style.pointerEvents = 'auto';
+                navigationArrows.classList.remove('visible');
+            },
+            1: () => {
+                openBook.style.opacity = '1';
+                openBook.style.pointerEvents = 'auto';
+                navigationArrows.classList.add('visible');
+                startPhotoSlideShow();
+                startTailWagging();
+                setTimeout(() => initMessages(), 100);
+            },
+            2: () => {
+                thirdSlide.style.opacity = '1';
+                thirdSlide.style.pointerEvents = 'auto';
+                navigationArrows.classList.add('visible');
+                initClickerGame();
+            },
+            3: () => {
+                fourthSlide.style.opacity = '1';
+                fourthSlide.style.pointerEvents = 'auto';
+                navigationArrows.classList.add('visible');
+                initVideo();
+            },
+            4: () => {
+                fifthSlide.style.opacity = '1';
+                fifthSlide.style.pointerEvents = 'auto';
+                navigationArrows.classList.add('visible');
+            }
+        };
+
+        if (slides[targetSlide]) {
+            slides[targetSlide]();
+        }
+    }
+
+    function forceShowSecondSlide() {
+        hideAllSlides();
         openBook.style.opacity = '1';
         openBook.style.pointerEvents = 'auto';
         navigationArrows.classList.add('visible');
         startPhotoSlideShow();
         startTailWagging();
         initMessages();
-
         currentSlide = 1;
         updateArrowVisibility();
     }
@@ -564,42 +563,44 @@ document.addEventListener('DOMContentLoaded', function () {
             arrowLeft.style.pointerEvents = 'none';
             arrowRight.style.pointerEvents = 'none';
         } else if (currentSlide === 4) {
-            // Пятый слайд - показываем только левую стрелку
             arrowLeft.style.opacity = '1';
             arrowRight.style.opacity = '0';
             arrowLeft.style.pointerEvents = 'auto';
             arrowRight.style.pointerEvents = 'none';
-        }
-        else {
+        } else {
             arrowLeft.style.opacity = '1';
             arrowRight.style.opacity = '1';
             arrowLeft.style.pointerEvents = 'auto';
             arrowRight.style.pointerEvents = 'auto';
-
-            // Затемняем стрелки когда нельзя перейти дальше
-            arrowLeft.style.opacity = currentSlide === 0 ? '0.7' : '1';
-            arrowRight.style.opacity = currentSlide === 4 ? '0.7' : '1';
         }
     }
 
-    if (backgroundMusic) {
-        backgroundMusic.volume = 0.05;
-        document.addEventListener('click', function startMusicOnClick() {
-            if (!musicStarted) {
-                backgroundMusic.play().then(() => {
-                    musicStarted = true;
-                    document.removeEventListener('click', startMusicOnClick);
-                }).catch(console.error);
-            }
-        });
+    // ========== ФУНКЦИИ АУДИО ==========
+    function initAudio() {
+        if (backgroundMusic) {
+            backgroundMusic.volume = 0.05;
+            document.addEventListener('click', function startMusicOnClick() {
+                if (!musicStarted) {
+                    backgroundMusic.play().then(() => {
+                        musicStarted = true;
+                        document.removeEventListener('click', startMusicOnClick);
+                    }).catch(console.error);
+                }
+            });
 
-        setTimeout(() => {
-            if (!musicStarted) {
-                backgroundMusic.play().catch(() => { });
-            }
-        }, 1000);
+            setTimeout(() => {
+                if (!musicStarted) {
+                    backgroundMusic.play().catch(() => { });
+                }
+            }, 1000);
+        }
+
+        if (catStepsSound) {
+            catStepsSound.volume = 0.07;
+        }
     }
 
+    // ========== ФУНКЦИИ КОТА ==========
     walkButton.addEventListener('click', function (event) {
         startCatAnimation();
         playMeowSound();
@@ -642,10 +643,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 150);
     }
 
-    if (catStepsSound) {
-        catStepsSound.volume = 0.07;
-    }
-
     function playCatSteps() {
         if (catStepsSound) {
             catStepsSound.currentTime = 0;
@@ -671,6 +668,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // ========== ФУНКЦИИ СОБАКИ ==========
     function startTailWagging() {
         const dogNormal = document.getElementById('dogNormal');
         const dogTail = document.getElementById('dogTail');
@@ -703,6 +701,7 @@ document.addEventListener('DOMContentLoaded', function () {
         dogTail.style.opacity = '0';
     }
 
+    // ========== ФУНКЦИИ СООБЩЕНИЙ ==========
     function initMessages() {
         const messageWrappers = document.querySelectorAll('.message-wrapper');
         messageWrappers.forEach(wrapper => {
@@ -712,6 +711,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // ========== ФУНКЦИИ ФОТО ==========
     function startPhotoSlideShow() {
         if (photoInterval) {
             clearInterval(photoInterval);
@@ -739,6 +739,7 @@ document.addEventListener('DOMContentLoaded', function () {
         photos[currentPhotoIndex].classList.add('active');
     }
 
+    // ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
     function forceArrowEvents() {
         arrowLeft.style.pointerEvents = 'auto';
         arrowRight.style.pointerEvents = 'auto';
@@ -749,14 +750,12 @@ document.addEventListener('DOMContentLoaded', function () {
     setTimeout(forceArrowEvents, 1000);
 
     function resetSlideState(slideNumber) {
-        switch (slideNumber) {
-            case 0:
+        const resetActions = {
+            0: () => {
                 const catContainer = document.querySelector('.cat-container');
-
                 catContainer.style.transform = 'translateX(0px)';
                 catContainer.style.transition = 'none';
                 catContainer.style.opacity = '1';
-
                 catStand.style.opacity = '1';
                 catWalk.style.opacity = '0';
 
@@ -768,12 +767,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 walkButton.style.opacity = '1';
                 walkButton.style.pointerEvents = 'auto';
                 okText.style.pointerEvents = 'none';
-
-
                 walkButton.style.zIndex = '20';
-                break;
-
-            case 1:
+            },
+            1: () => {
                 if (photos.length > 0) {
                     photos.forEach(photo => photo.classList.remove('active'));
                     photos[0].classList.add('active');
@@ -791,12 +787,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     dogNormal.style.opacity = '1';
                     dogTail.style.opacity = '0';
                 }
-                break;
-
-            case 2:
+            },
+            2: () => {
                 clickCount = 0;
                 updateClickCounter();
-
                 purchasedItems = [];
 
                 const purchasedItemsElements = document.querySelectorAll('.purchased-item');
@@ -804,24 +798,19 @@ document.addEventListener('DOMContentLoaded', function () {
                     item.classList.remove('active');
                 });
 
-                // Сбрасываем видимость вопросов и объектов
                 const questions = document.querySelectorAll('.shop-question');
                 const objects = document.querySelectorAll('.shop-object-img');
-
                 questions.forEach(q => q.style.opacity = '1');
                 objects.forEach(o => {
                     o.style.opacity = '0';
                 });
 
-                            const frames = document.querySelectorAll('.shop-coin-frame');
-            frames.forEach(frame => {
-                frame.style.animation = 'none'; // Принудительно сбрасываем анимацию
-                // Принудительный reflow для сброса анимации
-                void frame.offsetWidth;
-            });
+                const frames = document.querySelectorAll('.shop-coin-frame');
+                frames.forEach(frame => {
+                    frame.style.animation = 'none';
+                    void frame.offsetWidth;
+                });
 
-
-                // Сбрасываем анимацию моргания
                 if (killua && killuaBlink) {
                     killua.style.opacity = '1';
                     killuaBlink.style.opacity = '0';
@@ -831,7 +820,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     blinkTimeout = null;
                 }
 
-                // Сбрасываем режим на кликер
                 currentMode = 'clicker';
                 const clickerScreen = document.getElementById('clickerScreen');
                 const shopScreen = document.getElementById('shopScreen');
@@ -840,13 +828,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     shopScreen.classList.remove('active');
                 }
 
-                // Сбрасываем кнопки
                 if (clickButton) clickButton.style.opacity = '0.7';
                 if (shopButton) shopButton.style.opacity = '1';
 
                 stopLightningAnimation();
-                break;
-            case 3:
+            },
+            3: () => {
                 if (birthdayVideo) {
                     birthdayVideo.pause();
                     birthdayVideo.currentTime = 0;
@@ -854,27 +841,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (playButton) {
                     playButton.style.display = 'block';
                 }
-                break;
-            case 4:
-                break;
+            },
+            4: () => {
+                // Ничего не делаем для пятого слайда
+            }
+        };
+
+        if (resetActions[slideNumber]) {
+            resetActions[slideNumber]();
         }
     }
-
-    setTimeout(() => {
-        setInterval(() => {
-            if (overlay.classList.contains('active') &&
-                overlay.style.opacity === '1' &&
-                Date.now() - lastTransitionTime > 3000) {
-                console.log('Восстанавливаем интерфейс после застревания');
-                overlay.style.opacity = '0';
-                overlay.classList.remove('active');
-                arrowLeft.style.pointerEvents = 'auto';
-                arrowRight.style.pointerEvents = 'auto';
-
-                if (currentSlide === 1) {
-                    forceShowSecondSlide();
-                }
-            }
-        }, 1000);
-    }, 5000);
 });
